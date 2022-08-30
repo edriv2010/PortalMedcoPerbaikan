@@ -1,0 +1,4 @@
+alert("DSDSd")
+$('#exampleInputFile').inputFileText({
+    text: 'Select File'
+});
