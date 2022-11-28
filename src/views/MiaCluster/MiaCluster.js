@@ -44,10 +44,10 @@ class MiaCluster extends React.Component {
         errors: {}
       },
       currentPage:1,
-      pageSize:15,
+      pageSize:10,
       datas:[],
       dataMia:dataClustering,
-
+      inputElement :null,
       resultSearch:[],
       cadData:[],
       loading:0,
@@ -83,45 +83,52 @@ class MiaCluster extends React.Component {
   }
   setChecked=(e)=>
   {
-    //alert(this.state.datas.length);
     let togger=e.target.checked
-    for (let loopDatas  = 0; loopDatas < this.state.datas.length; loopDatas++) {
+    
+    //let itemAwal=(this.state.currentPage-1)*this.state.pageSize
+      for (let loopDatas  = 0; loopDatas <= cb_empId.length-1; loopDatas++) {
       cb_empId[loopDatas].checked=togger
+      
+      
     }
   
-    /*
-    for (let loopDatas  = 0; loopDatas < this.state.datas.length; loopDatas++) {
-      //console.log(cb_empId);
-      
-      if(this.state.pageSize!==loopDatas)
-      {
-        alert(loopDatas)
-
-        cb_empId[loopDatas].checked=togger
-  
-      }
-      // more statements
-    }*/
-    
        
-    //this.state.checkedValue=true//e.target.checked
+    this.state.checkedValue=e.target.checked;
+  }
+  setCheckedFalse=()=>
+  {
+    let togger=false//e.target.checked
+    
+    //let itemAwal=(this.state.currentPage-1)*this.state.pageSize
+      for (let loopDatas  = 0; loopDatas <= cb_empId.length-1; loopDatas++) {
+      cb_empId[loopDatas].checked=togger
+      
+      
+      
+    }
+  
+       
+    this.state.checkedValue=false
+    checkbox.checked=false//e.target.checked;
   }
   handleInputChange = (e, index) => {
     //setDisable(false);
+    console.log(e.target.name)
     const { name, value } = e.target;
     this.state.resultSearch = [...this.state.datas];
+    //alert(index)
     //alert(e.target.checked)//=true
-    if(name!=="cb_empId")
+    if(name==="cb_empId")
     {
       if(cb_empId[index].checked===false)
       {
         e.target.value=''
-      }else
-      {
-        this.state.resultSearch[index][name] = value;
-  
       }
         
+    }else
+    {
+      this.state.resultSearch[index][name] = value;
+
     }
     
     //alert(value);
@@ -211,12 +218,17 @@ let cekNull=true;
 //let cekNull=(impactValue?true:false )
       let goal=this.state.formState.valuesSearch.goal
       let impactValue=this.state.formState.valuesSearch.impactValue
+      //alert(this.state.formState.valuesSearch.impactValue)
       let roi=this.state.formState.valuesSearch.roi
+      //console.log("this.state.formState.valuesSearch.roi",this.state.formState.valuesSearch.roi)
       let typeNovelty=this.state.formState.valuesSearch.typeNovelty
+      //alert(this.state.formState.valuesSearch.typeNovelty)
       let cost =this.state.formState.valuesSearch.cost;
       let hse=this.state.formState.valuesSearch.hse
       let hsl=this.state.formState.valuesSearch.hsl
+      //alert(this.state.formState.valuesSearch.hsl)
       let level=this.state.formState.valuesSearch.level
+      //alert(this.state.formState.valuesSearch.level)
       //alert(cekNull)
       if(cekNull===false && impactValue==="ROI")
       {
@@ -242,50 +254,60 @@ let cekNull=true;
           timer: 1000
         })
        }else{
-        if(this.state.formState.valuesSearch.impactValue==="ROI")
+        if(this.state.formState.valuesSearch.impactValue.includes("ROI"))
         { 
+          
+          
+          
 //          console.log("this.state.formState.valuesSearch.goal",this.state.formState.valuesSearch.goal)
           //console.log("this.state.cadData",this.state.cadData)
           dataSearch=this.state.cadData.filter((data => 
             /*goal.find((itemB)=> {
               if(data.goal)return data.goal.includes(itemB.goal);
             }) &&*/
-            (data.goal?data.goal.includes(goal):true )&&
-            data.typeNovelty === 
-            this.state.formState.valuesSearch.typeNovelty
-            && data.roi===this.state.formState.valuesSearch.roi 
-            && data.level===this.state.formState.valuesSearch.level
-            && data.hsl===this.state.formState.valuesSearch.hsl));
+            (data.goal.includes(goal))
+            && this.state.formState.valuesSearch.typeNovelty.indexOf(data.typeNovelty)!==-1 
+            && this.state.formState.valuesSearch.roi.indexOf(data.roi)!==-1
+            /**/&& this.state.formState.valuesSearch.level.indexOf(data.level)!==-1
+            && this.state.formState.valuesSearch.hsl.indexOf(data.hsl)!==-1/**/
+            && data.step==='Submission'));
             
-        }else if(impactValue==="Cost Saving")
+        }else if(impactValue.includes("Cost Saving"))
         {
+          //console.log("this.state.formState.valuesSearch.cost",this.state.formState.valuesSearch.cost)
+          //alert( this.state.formState.valuesSearch.cost.indexOf("Extremely High Impact"))
           dataSearch=this.state.cadData.filter((data => 
             /*this.state.formState.valuesSearch.goal.find((itemB)=> {
               if(data.goal)return data.goal.includes(itemB.goal);
             })*/ 
-            (data.goal?data.goal.includes(goal):true )&&
-            data.typeNovelty === this.state.formState.valuesSearch.typeNovelty
-            && data.cost===this.state.formState.valuesSearch.cost 
-            && data.level==this.state.formState.valuesSearch.level
-            && data.hsl===this.state.formState.valuesSearchhsl));
-        }else if(impactValue==="HSE")
+//console.log(data,"this.state.formState.valuesSearch.cost.indexOf(data.cost)!==-1", this.state.formState.valuesSearch.cost)
+            (data.goal.includes(goal))
+            &&this.state.formState.valuesSearch.typeNovelty.indexOf(data.typeNovelty )!==-1
+            && this.state.formState.valuesSearch.level.indexOf(data.level)!==-1
+            && this.state.formState.valuesSearch.cost.indexOf(data.cost)!==-1
+            && this.state.formState.valuesSearch.hsl.indexOf(data.hsl)!==-1
+            && data.step==='Submission'));
+        }else if(impactValue.includes("HSE"))
         {
           dataSearch=this.state.cadData.filter((data => 
-
-            /*this.state.formState.valuesSearch.goal.find((itemB)=> {
+            /*goal.find((itemB)=> {
               if(data.goal)return data.goal.includes(itemB.goal);
             }) &&*/
-            (data.goal?data.goal.includes(goal):true )&& 
-            data.typeNovelty === this.state.formState.valuesSearch.typeNovelty
-            && data.hse===this.state.formState.valuesSearch.hse
-            && data.level===this.state.formState.valuesSearch.level
-            && data.hsl===this.state.formState.valuesSearch.hsl))
+            (data.goal.includes(goal))
+            && this.state.formState.valuesSearch.typeNovelty.indexOf(data.typeNovelty)!==-1 
+            && this.state.formState.valuesSearch.hse.indexOf(data.hse)!==-1
+            /**/&& this.state.formState.valuesSearch.level.indexOf(data.level)!==-1
+            && this.state.formState.valuesSearch.hsl.indexOf(data.hsl)!==-1/**/
+            && data.step==='Submission'));
+
+            
         }
         //console.log(dataSearch,"dataSearch33333")
         dataSearch=!Array.isArray(dataSearch)?(dataSearch?[dataSearch]:dataSearch):dataSearch;
         //this.state.cluster='B'
         if(Array.isArray(dataSearch))
         {
+          console.log("dataSearch",dataSearch)
           for(let loopCluster=0;loopCluster<=dataSearch.length-1;loopCluster++)
           {
             dataSearch[loopCluster]['cluster']=this.state.formState.valuesSearch.cluster;
@@ -335,8 +357,8 @@ let cekNull=true;
     //["Amir","Fifi","Tedi"],
     var brr = ["Type1","Type2"]
      let res = arr.filter(f => f.goal.includes(brr));
-    console.log("res=");
-    console.log("res=",res);
+//    console.log("res=");
+ //   console.log("res=",res);
 
 
 
@@ -356,7 +378,7 @@ let cekNull=true;
         },{
           //goal:[],
           id: 4,
-            name: 'Mahfuz1111'
+            name: 'Mahfuz'
         }/*,{
           goal:["type1","type5"],
           id: 4,
@@ -394,7 +416,7 @@ let cekNull=true;
         //alert(localStorage.getItem('data'))
         
         this.state.dataMia= JSON.parse(localStorage.getItem('data')) 
-        console.log("dataMia",JSON.parse(localStorage.getItem('data')))
+        //console.log("dataMia",JSON.parse(localStorage.getItem('data')))
   
       }else{
         localStorage.setItem('data',  JSON.stringify(this.state.dataMia) );
@@ -423,7 +445,10 @@ let cekNull=true;
   }
   setCurrentPage(pageVar)
   {
-    this.setState({currentPage: pageVar});
+    this.setState({currentPage: pageVar},()=>
+    {
+      this.setState({checkedValue: false});this.setCheckedFalse();
+    });
   }
   handleImpactValue= event => {
     event.persist();
@@ -450,24 +475,44 @@ let cekNull=true;
     this.setState({isCost: false});
  
     }
+    //const inputElement = React.useRef()
   }
-  handleSave = () => {
+  handleSave = (e) => {
 //    setEdit(!isEdit);
     //setRows(rows);
     let today = new Date();
   let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-  for (let loopsave=0;loopsave<=this.state.resultSearch.length-1;loopsave++)
+  let itemAwal=(this.state.currentPage-1)*this.state.pageSize 
+  let itemDatas = [...this.state.dataMia];
+  for (let loopsave=itemAwal;loopsave<=cb_empId.length-1;loopsave++)
   {
-    this.state.resultSearch[loopsave].step="Clustering";
+      
+    if(cb_empId[loopsave].checked===true)
+    {
 
-    //this.state.resultSearch[loopsave].submissiondate=date
+      var index = this.state.dataMia.findIndex(function(item, i){
+        return item.empId === empId[loopsave].value
+      });
+      let item = {...itemDatas[index]};
+      item.step="Clustering"
+      this.state.resultSearch.step="Clustering"
+      itemDatas[index]=item
+    }
+    
   }
+  //this.state.datas=itemDatas;
+  this.setState({datas: this.state.resultSearch});
+  this.setState({dataMia: itemDatas});
+  //this.state.dataMia=itemDatas;
+  this.inputElement.click();
+
   
+  localStorage.setItem('data', JSON.stringify(itemDatas));
+
+    //console.log("resultSearch2",this.state.resultSearch);
   //this.state.resultSearch.step="Cluster";
   
-    this.setState({datas: this.state.resultSearch});
-    this.setState({cadData:this.state.datas});
-    localStorage.setItem('data', JSON.stringify(this.state.cadData)); 
+     
 
     const { history }=this.props;
     //alert("dds") 
@@ -562,8 +607,10 @@ let cekNull=true;
 
         //alert(name+" "+value)valuesEdit
 
-
-    let value=event.target.value;
+        let value = Array.from(event.target.selectedOptions, option => option.value);
+        //this.setState({values: value});
+        console.log("value",value)
+    //let value=event.target.value;
         let name=event.target.name;
         //alert(name)
     this.setState
@@ -657,7 +704,7 @@ let cekNull=true;
                 <div class="col-md-1">Filter:</div>
                 <div class="col-md-1"><span class="form-group">
                     <select name="goal"  class="form-control" 
-                    style={{height:'24px', padding:0}}
+                    style={{height:'35px', padding:0}}
                     onChange={this.handleChangeSearch}>
                       <option selected>Value Add Goal</option>
                       <option value="type1">Increase Production and or Sustainability in Production</option>
@@ -670,7 +717,7 @@ let cekNull=true;
                 </div>
                 <div class="col-md-1"><span class="form-group">
                     <select name="typeNovelty"  class="form-control" 
-                    style={{height:'24px', padding:0}}
+                    style={{height:'35px', padding:0}}
                     onChange={this.handleChangeSearch}>
                       <option selected>Novelty</option>
                       <option>New</option>
@@ -687,7 +734,7 @@ let cekNull=true;
                 <div class="col-md-2"><span class="form-group">
                     <select name="impactValue" 
                     onChange={this.handleImpactValue}
-                    class="form-control" style={{height:'24px', padding:0}}>
+                    class="form-control" style={{height:'35px', padding:0}}>
                       <option selected>Impact Value</option>
                       <option>ROI</option>
                       <option>Cost Saving</option>
@@ -697,8 +744,7 @@ let cekNull=true;
                 </div>
                 
                 <div class="col-md-2" hidden={!this.state.isRoi}><span class="form-group" >
-                    <select name="roi" onChange={this.handleChangeSearch } class="form-control" style={{height:'24px', padding:0}}>
-                      <option selected>ROI</option>
+                    <select name="roi" onChange={this.handleChangeSearch } multiple={true} class="form-control" style={{height:'35px', padding:0}}>
                       <option value="Very High">Very High | {this.state.lbhBesar}20% </option>
                       <option value="High">High | 15-20% </option>
                       <option value="Medium">Medium | 10-15%</option>
@@ -710,9 +756,9 @@ let cekNull=true;
  
                 
                 <div class="col-md-2" hidden={!this.state.isCost}><span class="form-group" >
-                    <select name="cost" 
+                    <select name="cost" multiple="true"
                     onChange={this.handleChangeSearch}
-                    class="form-control" style={{height:'24px', padding:0}}>
+                    class="form-control" style={{height:'35px', padding:0}}>
                       <option selected>Cost Saving</option>
                       <option value="Extremely High Impact">Extremely High Impact |  {this.state.lbhBesar} 1 MM USD </option>
                       <option value="Very High Impact">Very High Impact | 500 - 1 MM USD </option>
@@ -726,9 +772,9 @@ let cekNull=true;
                 </div>
                 
                 <div class="col-md-2" hidden={!this.state.isHse}><span class="form-group">
-                    <select name="hse" 
+                    <select name="hse"   multiple="true"
                      onChange={this.handleChangeSearch}
-                    class="form-control" style={{height:'24px', padding:0}}>
+                    class="form-control" style={{height:'35px', padding:0}}>
                       <option selected>HSE</option>
                       <option value="Remove Hazard">Remove Hazard </option>
                       <option value="Minimize Hazard "> Minimize Hazard  </option>
@@ -742,8 +788,8 @@ let cekNull=true;
                 
 
                 <div class="col-md-3"><span class="form-group">
-                    <select name="hsl" onChange={this.handleChangeSearch} class="form-control" style={{height:'24px', padding:0}}>
-                      <option selected>Application Boundary</option>s
+                    <select name="hsl" multiple="true" onChange={this.handleChangeSearch} class="form-control" style={{height:'35px', padding:0}}>
+                      <option selected>Application Boundary</option>
                       <option value="Facility">Facility</option>
                       <option value="System">System</option>
                       <option value="Sub System">Sub System</option>
@@ -756,7 +802,7 @@ let cekNull=true;
                   </span>
                 </div>
                 <div class="col-md-2"><span class="form-group">
-                    <select name="level" onChange={this.handleChangeSearch} class="form-control" style={{height:'24px', padding:0}}>
+                    <select name="level" multiple="true" onChange={this.handleChangeSearch} class="form-control" style={{height:'35px', padding:'10'}}>
                       <option selected>Change Level</option>
                       <option>Low</option>
                       <option>Medium</option>
@@ -768,7 +814,7 @@ let cekNull=true;
                 <div class="col-md-1"><span class="form-group">
                     <select name="cluster"
                      onChange={this.handleChangeSearch}
-                    class="form-control" style={{height:'24px', padding:0}}>
+                    class="form-control" style={{height:'35px', padding:0}}>
                       <option selected>Cluster</option>
                       <option>A</option>
                       <option>B</option>
@@ -776,9 +822,13 @@ let cekNull=true;
                     </select>
                   </span>
                 </div>
-                <div class="col-md-1"><span class="form-group">
+                <div class="col-md-1 center" style={{ verticalAlign:'center',paddingTop:'5px', alignItems: 'center',
+                justifyContent: 'center'}}>
+                  <span class="form-group" style={{ display: 'flex',alignItems: 'center',
+                justifyContent: 'center'}}>
                     <button type="button" class="btn btn-success btn-xs" 
-                    onClick={this.handleSearch}>GO </button></span>
+                    onClick={this.handleSearch}
+                    ref={input => this.inputElement = input}>GO </button></span>
                 </div>
               </div>
             </div>
@@ -788,7 +838,9 @@ let cekNull=true;
               <table class="table table-striped">
                 <tr>
                   <th width="21" style={{width: '10px'}}>
-                    <input type="checkbox" name="checkbox" onChange= {(e) => this.setChecked(e)}  id="checkbox"/>
+                    <input type="checkbox" name="checkbox" 
+                    onChange= {(e) => this.setChecked(e)}  
+                    value={this.state.checkedValue} id="checkbox"/>
                     <label for="checkbox"> </label></th>
                   <th width="30" style={{width: '10px'}}>ID</th>
                   <th width="137">Full Name</th>
@@ -812,7 +864,8 @@ let cekNull=true;
                      
 
                     </span></td>
-                    <td>{el.empId}</td>
+                    <td>{el.empId}
+                    <input type='hidden' name="empId"  value={el.empId} id="empId"></input></td>
                     <td>{el.fullname}</td>
                     <td>{el.tittle}</td>
                     <td>{el.cluster}&nbsp;</td>
@@ -866,7 +919,7 @@ let cekNull=true;
                 }):null
                 }
                 
-              </table>
+              </table>                     
             </div>
             {/*<!-- /.box-body -->*/}
             
@@ -878,11 +931,11 @@ let cekNull=true;
         currentPage={this.state.currentPage}
         totalCount={this.state.datas.length}
         pageSize={this.state.pageSize}
-        onPageChange={page => this.setCurrentPage(page)}
+        onPageChange={page => {this.setCurrentPage(page)}}
       />
               
             </div>
-            ):null}
+            ):'sss'}
 
           </div>{/*<!-- /.box -->*/}
         </section>

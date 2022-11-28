@@ -77,29 +77,31 @@ class MiaReviewing extends React.Component {
   {
     //alert(this.state.datas.length);
     let togger=e.target.checked
-    for (let loopDatas  = 0; loopDatas < this.state.datas.length; loopDatas++) {
+    //alert(cb_empId.length)
+    //let itemAwal=(this.state.currentPage-1)*this.state.pageSize
+      for (let loopDatas  = 0; loopDatas <= cb_empId.length-1; loopDatas++) {
+      cb_empId[loopDatas].checked=togger
       
-      if(this.state.datas.length===1)cb_empId.checked=togger;else cb_empId[loopDatas].checked=togger
-      //alert(loopDatas)
+      
     }
     
   
-    /*
-    for (let loopDatas  = 0; loopDatas < this.state.datas.length; loopDatas++) {
-      //console.log(cb_empId);
-      
-      if(this.state.pageSize!==loopDatas)
-      {
-        alert(loopDatas)
-
-        cb_empId[loopDatas].checked=togger
-  
-      }
-      // more statements
-    }*/
+  }
+  setCheckedFalse=()=>
+  {
+    let togger=false//e.target.checked
     
+    //let itemAwal=(this.state.currentPage-1)*this.state.pageSize
+      for (let loopDatas  = 0; loopDatas <= cb_empId.length-1; loopDatas++) {
+      cb_empId[loopDatas].checked=togger
+      
+      
+      
+    }
+  
        
-    //this.state.checkedValue=true//e.target.checked
+    this.state.checkedValue=false
+    checkbox.checked=false//e.target.checked;
   }
   valueFrom=(value,name)=>{
  
@@ -242,17 +244,17 @@ class MiaReviewing extends React.Component {
       const { name, value } = e.target;
       this.state.resultSearch = [...this.state.datas];
       //alert(e.target.checked)//=true
-      if(name!=="cb_empId")
+      if(name==="cb_empId")
       {
         if(cb_empId[index].checked===false)
         {
           e.target.value=''
-        }else
-        {
-          this.state.resultSearch[index][name] = value;
-    
         }
           
+      }else
+      {
+        this.state.resultSearch[index][name] = value;
+  
       }
       
       //alert(value);
@@ -321,7 +323,7 @@ class MiaReviewing extends React.Component {
         let team=this.state.formState.valuesSearch.team
         let criteria=this.state.formState.valuesSearch.criteria
         let cluster =this.state.formState.valuesSearch.cluster;
-        alert(this.state.formState.valuesSearch.team)
+        //alert(this.state.formState.valuesSearch.team)
         cekNull=team && criteria && cluster ?false: true
         if(cekNull===true) 
          {
@@ -377,45 +379,53 @@ class MiaReviewing extends React.Component {
          handleSave = () => {
           //    setEdit(!isEdit);
               //setRows(rows);
-              let today = new Date();
+            let today = new Date();
             let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-            for (let loopsave=0;loopsave<=this.state.resultSearch.length-1;loopsave++)
+
+            let itemAwal=(this.state.currentPage-1)*this.state.pageSize 
+            let itemDatas = [...this.state.dataMia];
+            for (let loopsave=itemAwal;loopsave<=cb_empId.length-1;loopsave++)
             {
-              this.state.resultSearch[loopsave].step="Reviewing";
+              if(cb_empId[loopsave].checked===true)
+              {
           
-              //this.state.resultSearch[loopsave].submissiondate=date
+                var index = this.state.dataMia.findIndex(function(item, i){
+                  return item.empId === empId[loopsave].value
+                });
+                let item = {...itemDatas[index]};
+                item.step="Reviewing"
+                itemDatas[index]=item
+                this.state.resultSearch.step="Reviewing"
+                
+              }
+              
             }
+            this.setState({datas: this.state.resultSearch});
+            this.setState({dataMia: itemDatas});
             
+            this.state.dataMia=itemDatas;
+            this.inputElement.click();
+                    
+
+            localStorage.setItem('data', JSON.stringify(itemDatas));
+          
+            const { history }=this.props;
+ ///s/           //alert("dds") 
+              history.push("/mia/judging");
+              Swal.fire({
+                position: 'center',
+                icon: 'Success',
+                title: 'Data have been Reviewig proceess   ',
+                showConfirmButton: false,
+                timer: 1000
+              })
+        
             //this.state.resultSearch.step="Cluster";
             
               //this.setState({datas: this.state.resultSearch});
               //this.setState({cadData:this.state.datas});
                             //this.setState({datas: this.state.resultSearch});
               //this.setState({cadData:this.state.datas});
-              this.setState
-              (prevState => ({
-                cadData:
-                this.state.resultSearch
-
-            
-                
-               
-                 
-              }),()=>{
-                this.setState({datas:this.state.resultSearch})
-                localStorage.setItem('data', JSON.stringify(this.state.cadData));
-                const { history }=this.props;
-                //alert("dds") 
-                  history.push("/mia/judging");
-                  Swal.fire({
-                    position: 'center',
-                    icon: 'Success',
-                    title: 'Data have been Reviewig proceess   ',
-                    showConfirmButton: false,
-                    timer: 1000
-                  })
-  
-              });
             
                
           
@@ -494,14 +504,16 @@ class MiaReviewing extends React.Component {
         //alert("DDDD")
         return this.state.datas.slice(firstPageIndex, lastPageIndex);
       }else 
-      {console.log("this.state.datas",this.state.datas)
-        return this.state.datas
+      { return this.state.datas
       }
     }
     setCurrentPage(pageVar)
+  {
+    this.setState({currentPage: pageVar},()=>
     {
-      this.setState({currentPage: pageVar});
-    }
+      this.setState({checkedValue: false});this.setCheckedFalse();
+    });
+  }
     
     
   componentWillMount() {
@@ -511,7 +523,6 @@ class MiaReviewing extends React.Component {
       //alert(localStorage.getItem('data'))
       
       this.state.dataMia= JSON.parse(localStorage.getItem('data')) 
-      console.log("dataMia",JSON.parse(localStorage.getItem('data')))
 
     }else{
       localStorage.setItem('data',  JSON.stringify(this.state.dataMia) );
@@ -637,7 +648,7 @@ class MiaReviewing extends React.Component {
                   </span>
                 </div>
                 <div class="col-md-1"><span class="form-group">
-                    <button type="submit" onClick={this.handleSearch} class="btn btn-success btn-block btn-xs">GO </button>
+                    <button type="submit" onClick={this.handleSearch} ref={input => this.inputElement = input}  class="btn btn-success btn-block btn-xs">GO </button>
                     </span>
 
                 </div>
@@ -647,7 +658,7 @@ class MiaReviewing extends React.Component {
               <table class="table with-border">
                 <tr>
                   <th width="30" style={{width: '10px'}}>
-                    <input type="checkbox" name="checkbox" onChange= {(e) => this.setChecked(e)}  id="checkbox"/>
+                    <input type="checkbox" name="checkbox" onChange= {(e) => this.setChecked(e)} ref={input => this.inputElement = input} value={this.state.checkedValue}  id="checkbox"/>
                   <label for="checkbox"> </label></th>
                   <th width="30" style={{width: '10px'}}>ID</th>
                   <th width="119">Full Name</th>
@@ -667,7 +678,9 @@ class MiaReviewing extends React.Component {
                   <td><span style={{width: '10px'}}>
                     <input type="checkbox" name="cb_empId" onChange={(e) => this.handleInputChange(e, i)}  id="cb_empId"/>
                   </span></td>
-                  <td>{el.empId}</td>
+                  <td>{el.empId}
+                  <input type='hidden' name="empId"  value={el.empId} id="empId"></input>
+                  </td>
                   <td>{el.fullname}</td>
                   <td>{el.tittle}</td>
                   <td>{el.team}, Criteria {el.criteria}</td>
@@ -697,7 +710,7 @@ class MiaReviewing extends React.Component {
         currentPage={this.state.currentPage}
         totalCount={this.state.datas.length}
         pageSize={this.state.pageSize}
-        onPageChange={page => this.setCurrentPage(page)}
+        onPageChange={page => {this.setCurrentPage(page)} }
       />
               
             </div>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { UserSignIn } from 'views';
+//import { Link as RouterLink, withRouter } from 'react-router-dom';
+//import PropTypes from 'prop-types';
+//import { UserSignIn } from 'views';
 import validate from 'validate.js';
 import '../../assets/css_swal/cssSwal.css';
-import Slider from 'react-slick/lib/slider';
+//import Slider from 'react-slick/lib/slider';
 // import { bg_login } from '../../assets/img_master_backup/index'
 import dataClustering from '../../common/datajson/clustering.json';
 import Pagination from '../../../src/components/Pagination';
@@ -19,12 +19,12 @@ import {
   Link,
   Typography
 } from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+//import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import dataUser from '../../common/datajson/user.json';
+//import dataUser from '../../common/datajson/user.json';
 
 //import UsersByDevice from 'views/Dashboard/components/UsersByDevice';
-import axios from 'axios';
+//import axios from 'axios';
 
 class MiaReviewing extends React.Component {
   constructor(props) {
@@ -52,21 +52,7 @@ class MiaReviewing extends React.Component {
       //cluster:'A',
       checkedValue:false,
       
-      schema : {
-        user_name: {
-          presence: { allowEmpty: false, message: 'is required' },
-          //email: true,
-          length: {
-            maximum: 64
-          }
-        },
-        password: {
-          presence: { allowEmpty: false, message: 'is required' },
-          length: {
-            maximum: 128
-          }
-        }
-      }
+     
   
     };
     
@@ -103,7 +89,7 @@ class MiaReviewing extends React.Component {
     //alert(this.state.datas.length);
     let togger=e.target.checked
     
-    for (let loopDatas  = 0; loopDatas < this.state.datas.length; loopDatas++) {
+    for (let loopDatas  = 0; loopDatas < cb_empId.length; loopDatas++) {
       cb_empId[loopDatas].checked=togger
     }
   
@@ -124,39 +110,30 @@ class MiaReviewing extends React.Component {
        
     //this.state.checkedValue=true//e.target.checked
   }
-  setChecked=(e)=>
+  setCheckedFalse=()=>
   {
-    //alert(this.state.datas.length);
-    let togger=e.target.checked
-    for (let loopDatas  = 0; loopDatas < this.state.datas.length; loopDatas++) {
+    let togger=false//e.target.checked
+    
+    //let itemAwal=(this.state.currentPage-1)*this.state.pageSize
+      for (let loopDatas  = 0; loopDatas <= cb_empId.length-1; loopDatas++) {
       cb_empId[loopDatas].checked=togger
+      
+      
+      
     }
   
-    /*
-    for (let loopDatas  = 0; loopDatas < this.state.datas.length; loopDatas++) {
-      //console.log(cb_empId);
-      
-      if(this.state.pageSize!==loopDatas)
-      {
-        alert(loopDatas)
-
-        cb_empId[loopDatas].checked=togger
-  
-      }
-      // more statements
-    }*/
-    
        
-    //this.state.checkedValue=true//e.target.checked
+    this.state.checkedValue=false
+    checkbox.checked=false//e.target.checked;
   }
-  handleInputChange = (e, index) => {
+    handleInputChange = (e, index) => {
     //setDisable(false);
     const { name, value } = e.target;
     this.state.resultSearch = [...this.state.datas];
     //alert(e.target.checked)//=true
     if(name!=="cb_empId")
     {
-      alert(cb_empId[index].checked)
+      
       if(cb_empId[index].checked===false)
       {
         e.target.value=''
@@ -382,18 +359,36 @@ class MiaReviewing extends React.Component {
               //setRows(rows);
               let today = new Date();
             let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-            for (let loopsave=0;loopsave<=this.state.resultSearch.length-1;loopsave++)
+            let itemAwal=(this.state.currentPage-1)*this.state.pageSize 
+            let itemDatas = [...this.state.dataMia];
+
+            for (let loopsave=itemAwal;loopsave<=cb_empId.length-1;loopsave++)
             {
-              this.state.resultSearch[loopsave].step="Judging";
+    
+              if(cb_empId[loopsave].checked===true)
+              {
+
+                var index = this.state.dataMia.findIndex(function(item, i){
+                  return item.empId === empId[loopsave].value
+                });
+                let item = {...itemDatas[index]};
+                item.step="Judging"
+                itemDatas[index]=item
+
+                
+              } 
           
               //this.state.resultSearch[loopsave].submissiondate=date
             }
             
             //this.state.resultSearch.step="Cluster";
             
-              this.setState({datas: this.state.resultSearch});
-              this.setState({cadData:this.state.datas});
-              localStorage.setItem('data', JSON.stringify(this.state.cadData)); 
+            this.setState({datas: this.state.resultSearch});
+            this.setState({dataMia: itemDatas});
+            //this.state.dataMia=itemDatas;
+//            this.inputElement.click();
+          
+              localStorage.setItem('data', JSON.stringify(itemDatas)); 
           
               const { history }=this.props;
               //alert("dds") 
@@ -431,7 +426,11 @@ class MiaReviewing extends React.Component {
     }
     setCurrentPage(pageVar)
     {
-      this.setState({currentPage: pageVar});
+        this.setState({currentPage: pageVar},
+          ()=>
+          {
+            this.setState({checkedValue: false});this.setCheckedFalse();
+          });
     }
     
  
@@ -484,7 +483,9 @@ class MiaReviewing extends React.Component {
                   <td><span style={{width: '10px'}}>
                     <input type="checkbox" name="cb_empId" onChange={(e) => this.handleInputChange(e, i)}  id="cb_empId"/>
                   </span></td>
-                  <td>{el.empId}</td>
+                  <td>{el.empId}
+                  <input type="checkbox" name="cb_empId" onChange={(e) => this.handleInputChange(e, i)}  id="cb_empId"/>
+                  </td>
                   <td>{el.fullname}</td>
                   <td>{el.tittle}</td>
                   <td>{el.team}, Criteria {el.criteria}</td>

@@ -213,6 +213,13 @@ class MiaReviewing extends React.Component {
     
   };
 
+
+
+    setCurrentPage(pageVar)
+    {
+        this.setState({currentPage: pageVar});
+    }
+
     render() {
 
   
@@ -268,15 +275,20 @@ class MiaReviewing extends React.Component {
                 
               </table>
             </div>{/*<!-- /.box-body -->*/}
+            { (this.state.datas!==undefined)?(
             <div class="box-footer clearfix">
-              <ul class="pagination pagination-sm no-margin pull-right">
-                <li><a href="#">&laquo;</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">&raquo;</a></li>
-              </ul>
+              <button type="submit" onClick={this.handleSave} class="btn btn-success btn-xs"><i class="fa fa-thumbs-up"></i> Process</button>
+              <Pagination
+        className="pagination pagination-sm no-margin pull-right"
+        currentPage={this.state.currentPage}
+        totalCount={this.state.datas.length}
+        pageSize={this.state.pageSize}
+        onPageChange={page => this.setCurrentPage(page)}
+      />
+              
             </div>
+            ):null}
+
 
           </div>{/*<!-- /.box -->*/}
         </section>{/*<!-- /.content -->*/}
